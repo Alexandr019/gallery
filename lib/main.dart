@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:http/http.dart' as http;
@@ -19,12 +20,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchimages();
   }
 
-  late List data;
+  List? data;
 
   Future<String> fetchimages() async {
     var jsondata = await http.get(Uri.parse(
@@ -45,77 +45,80 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: const Text(
-            "Gallery Wallpapers",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black,
-              letterSpacing: 1,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        body: ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.all(5.0),
-                color: Colors.white,
-                child: Row(
-                  children: <Widget>[
-                    FullScreenWidget(
-                child: Hero(tag: 'Gallery',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(
-                    data[index]["urls"]['small'],
-                    height: 125,
-                    width: 125,
-                    fit: BoxFit.cover,
+      home: data == null
+          ? CircularProgressIndicator()
+          : Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: const Text(
+                  "Gallery Wallpapers",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w500,
                   ),
-                ),),
-                      
-                    ),
-                    SizedBox(
-                      width: 250,
-                      child: Stack(
+                ),
+              ),
+              body: ListView.builder(
+                  itemCount: data!.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.all(5.0),
+                      color: Colors.white,
+                      child: Row(
                         children: <Widget>[
-                          Container(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, bottom: 5.0),
-                            child: Text(
-                              "User: " + data[index]['user']['name'],
-                              style: const TextStyle(
-                                fontSize: 20.0,
-                                letterSpacing: 1,
-                                fontWeight: FontWeight.w500,
+                          FullScreenWidget(
+                            child: Hero(
+                              tag: 'Gallery',
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                  data![index]["urls"]['small'],
+                                  height: 125,
+                                  width: 125,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
-                          Container(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, top: 50.0),
-                            child: Text(
-                              data[index]['alt_description'] ?? '',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          SizedBox(
+                            width: 250,
+                            child: Stack(
+                              children: <Widget>[
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, bottom: 5.0),
+                                  child: Text(
+                                    "User: " + data![index]['user']['name'],
+                                    style: const TextStyle(
+                                      fontSize: 20.0,
+                                      letterSpacing: 1,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, top: 50.0),
+                                  child: Text(
+                                    data![index]['alt_description'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-      ),
+                    );
+                  }),
+            ),
     );
   }
 }
