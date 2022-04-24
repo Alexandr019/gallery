@@ -12,9 +12,9 @@ class PhotoItem {
   });
 
   factory PhotoItem.fromJson(Map<String, dynamic> json) => PhotoItem(
-    name: json['alt_description'],
-    authorName: json['user']['name'],
-    urlSmallImage: json["urls"]['small'],
-    urlBigImage: json["urls"]['small'],
+    name: json['alt_description'] ?? '',
+    authorName: json['user']['name'] ?? '',
+    urlSmallImage: json["urls"]['small'] ?? '',
+    urlBigImage: json["urls"]['full'] ?? '',
   );
 }
